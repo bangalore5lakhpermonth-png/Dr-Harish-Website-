@@ -1,0 +1,7 @@
+{
+  "name": "Dr. Harish Gowda - Surgical Gastroenterologist & Laparoscopic Care",
+  "description": "Official clinical website, patient appointment booking, and secure medical record storage for Dr. Harish Gowda, Laparoscopic Surgeon and Surgical Gastroenterologist at HIMAS Hospital, Bangalore.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
+
