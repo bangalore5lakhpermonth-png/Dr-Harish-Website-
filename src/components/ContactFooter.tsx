@@ -30,14 +30,9 @@ export const ContactFooter: React.FC<ContactFooterProps> = ({ onOpenBooking, onO
             
             {/* Col 1: Doctor Identity & Summary */}
             <div className="lg:col-span-4 space-y-4">
-              <div className="flex items-center gap-3.5">
-                <div className="w-12 h-12 rounded-xl overflow-hidden shrink-0 border-2 border-emerald-500 shadow-md bg-slate-900">
-                  <img 
-                    src="/images/dr_harish_suit.jpg" 
-                    alt="Dr. Harish Gowda Logo" 
-                    className="w-full h-full object-cover object-[50%_12%]"
-                    referrerPolicy="no-referrer"
-                  />
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-emerald-600 flex items-center justify-center text-white font-bold shadow-md">
+                  <Stethoscope className="w-5 h-5 stroke-[2.5]" />
                 </div>
                 <div>
                   <h3 className="font-syne text-slate-900 font-bold text-base tracking-tight">

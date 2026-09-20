@@ -3,7 +3,6 @@ export interface SurgeryDetail {
   title: string;
   shortDesc: string;
   iconName: string;
-  image?: string;
   indications: string[];
   technique: string;
   stayDuration: string;
@@ -243,7 +242,6 @@ export const DOCTOR_INFO = {
       title: "Laparoscopic Gallbladder Surgery",
       shortDesc: "Keyhole surgery (cholecystectomy) for gallstones, biliary colic, and gallbladder polyps with pinhole incisions and rapid recovery.",
       iconName: "ShieldPlus",
-      image: "/images/dr_harish_ot.jpg",
       indications: ["Symptomatic Gallstones", "Cholecystitis (Inflammation)", "Gallbladder Polyps", "Biliary Dysplasia"],
       technique: "4-port minimal access laparoscopy, HD optical magnification, safe critical view of safety (CVS) dissection.",
       stayDuration: "Day care / 24 Hours",
@@ -255,7 +253,6 @@ export const DOCTOR_INFO = {
       title: "Advanced Laparoscopic Hernia Repair",
       shortDesc: "Comprehensive repair of Inguinal, Umbilical, Incisional, and Ventral hernias using tension-free 3D anatomical mesh.",
       iconName: "Activity",
-      image: "/images/dr_harish_robotic.jpg",
       indications: ["Groin / Inguinal Hernia (Unilateral/Bilateral)", "Umbilical & Paraumbilical Hernia", "Post-surgical Incisional Hernia", "Ventral / Epigastric Hernia"],
       technique: "TAPP (Transabdominal Preperitoneal) & TEP (Totally Extraperitoneal) laparoscopic mesh plasty.",
       stayDuration: "24 Hours hospital stay",
@@ -267,7 +264,6 @@ export const DOCTOR_INFO = {
       title: "Surgical Gastroenterology & GI Care",
       shortDesc: "Surgical treatment of diseases of the esophagus, stomach, small intestine, colon, appendix, and gastrointestinal blockages.",
       iconName: "HeartPulse",
-      image: "/images/dr_harish_endoscopy.jpg",
       indications: ["Recurrent Acid Reflux / Hiatus Hernia", "Acute Appendicitis", "Intestinal Strictures & Bowel Obstruction", "Gastrointestinal Tumors"],
       technique: "Minimally invasive laparoscopic resection and anatomical reconstruction.",
       stayDuration: "2 to 4 Days depending on case",
@@ -279,7 +275,6 @@ export const DOCTOR_INFO = {
       title: "Diagnostic & Therapeutic Endoscopy",
       shortDesc: "Advanced high-definition upper GI endoscopy and colonoscopy for diagnosis of ulcers, bleeding, reflux, and polyp resection.",
       iconName: "Eye",
-      image: "/images/dr_harish_endoscopy.jpg",
       indications: ["Chronic Dyspepsia / GERD", "Unexplained Anemia or GI Bleed", "Stomach & Duodenal Ulcers", "Colorectal Screening & Polypectomy"],
       technique: "Narrow-band imaging (NBI) video endoscopy under conscious sedation for painless examination.",
       stayDuration: "Outpatient / 2 Hours Observation",
@@ -291,7 +286,6 @@ export const DOCTOR_INFO = {
       title: "Piles, Fissure & Fistula Treatment",
       shortDesc: "Compassionate, modern surgical and minimally invasive care for hemorrhoids, anal fissures, and perianal fistulas.",
       iconName: "Stethoscope",
-      image: "/images/dr_harish_suit.jpg",
       indications: ["Grade 2-4 Internal & External Piles", "Chronic Painful Anal Fissure", "Complex Anal Fistula", "Pilonidal Sinus"],
       technique: "MIPH (Stapler Hemorrhoidectomy), Laser treatment, and LIFT procedure for fistula preservation.",
       stayDuration: "Day care / 24 Hours",
@@ -303,7 +297,6 @@ export const DOCTOR_INFO = {
       title: "Emergency & General Surgical Care",
       shortDesc: "Round-the-clock surgical emergency response for acute abdominal emergencies, trauma, and soft tissue infections at HIMAS Hospital.",
       iconName: "Ambulance",
-      image: "/images/dr_harish_ot.jpg",
       indications: ["Perforated Peptic Ulcer", "Obstructed Hernia", "Intra-abdominal Sepsis", "Trauma & Abscess Drainage"],
       technique: "Emergency diagnostic laparoscopy and open surgical intervention with ICU support.",
       stayDuration: "Case-specific monitored recovery",
@@ -453,7 +446,7 @@ export const DOCTOR_INFO = {
     beforeLabel: "BEFORE — Severe Stricture & Luminal Narrowing",
     afterLabel: "AFTER — Complete Luminal Clearance & Healed Anatomy",
     beforeImage: "/images/dr_harish_endoscopy.jpg",
-    afterImage: "/images/dr_harish_ot.jpg",
+    afterImage: "/images/dr_harish_convocation.jpg",
     caseSummary: "Patient presented with refractory dysphagia, acute digestive obstruction, and severe mucosal congestion. Under high-definition endoscopic visualization and minimally invasive technique, normal GI patency was restored with zero open incisions.",
     preOpFindings: [
       "Severe luminal stricture with mucosal congestion & edema",
@@ -476,7 +469,7 @@ export const DOCTOR_INFO = {
       category: "Esophagus & Upper GI",
       readTime: "4 min read",
       date: "September 2026",
-      image: "/images/dr_harish_portrait.jpg",
+      image: "/images/esophagus_anatomy.jpg",
       summary: "Chronic heartburn, nighttime acid reflux, and regurgitation often point to a weakened lower esophageal sphincter (LES). Discover when lifestyle tweaks end and keyhole surgery cures the root cause.",
       keyPoints: [
         "Weakened Lower Esophageal Sphincter (LES) allows gastric acid into esophagus",

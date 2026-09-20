@@ -237,7 +237,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onOpenBooking, onOpenP
                         Drop Doctor Photo Here
                       </p>
                       <p className="font-mono text-xs text-emerald-200 mt-1">
-                        Applies your original doctor photo directly
+                        Applies WhatsApp Image 2026-08-14 at 10.45.14.jpeg directly
                       </p>
                     </div>
                   )}

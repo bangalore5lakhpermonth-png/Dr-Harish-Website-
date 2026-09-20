@@ -133,14 +133,11 @@ export const Navbar: React.FC<NavbarProps> = ({
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex items-center justify-between">
         {/* Brand Logo & Title */}
         <a href="#" className="flex items-center gap-3 group">
-          <div className="relative w-11 h-11 rounded-xl overflow-hidden shadow-md group-hover:shadow-emerald-500/25 transition-all border-2 border-emerald-500 bg-slate-900 shrink-0">
-            <img 
-              src="/images/dr_harish_suit.jpg" 
-              alt="Dr. Harish Gowda Logo" 
-              className="w-full h-full object-cover object-[50%_12%] group-hover:scale-110 transition-transform duration-300"
-              referrerPolicy="no-referrer"
-            />
-            <span className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-emerald-500 rounded-full border-2 border-white" />
+          <div className="relative w-11 h-11 rounded-xl bg-gradient-to-br from-emerald-500 via-teal-600 to-blue-600 p-0.5 shadow-md group-hover:shadow-emerald-500/25 transition-all">
+            <div className="w-full h-full bg-white rounded-[10px] flex items-center justify-center text-emerald-600">
+              <Stethoscope className="w-6 h-6 group-hover:scale-110 text-emerald-600 transition-transform" />
+            </div>
+            <span className="absolute -bottom-1 -right-1 w-3.5 h-3.5 bg-emerald-500 rounded-full border-2 border-white ring-1 ring-emerald-300" />
           </div>
           <div>
             <div className="flex items-center gap-2">
@@ -151,8 +148,8 @@ export const Navbar: React.FC<NavbarProps> = ({
                 Gold Medalist DipMAS
               </span>
             </div>
-            <p className="text-xs text-emerald-800 font-medium tracking-wide line-clamp-1">
-              Gold Medalist • Surgical Gastroenterologist
+            <p className="text-xs text-slate-500 font-medium tracking-wide line-clamp-1">
+              Laparoscopic Surgeon • HIMAS Hospital
             </p>
           </div>
         </a>
@@ -211,23 +208,6 @@ export const Navbar: React.FC<NavbarProps> = ({
       {/* Mobile Drawer */}
       {mobileMenuOpen && (
         <div className="lg:hidden border-t border-slate-200 bg-white/98 backdrop-blur-2xl px-4 pt-3 pb-6 space-y-3 shadow-xl">
-          {/* Mobile Doctor Profile Card */}
-          <div className="flex items-center gap-3 p-3 rounded-xl bg-slate-50 border border-slate-200 mb-1">
-            <div className="w-12 h-12 rounded-xl overflow-hidden shrink-0 border border-emerald-500/30 bg-slate-900 shadow-2xs">
-              <img
-                src="/images/dr_harish_suit.jpg"
-                alt="Dr. Harish Gowda"
-                className="w-full h-full object-cover object-top"
-                referrerPolicy="no-referrer"
-              />
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="font-syne text-sm font-bold text-slate-900 truncate">Dr. Harish Gowda</p>
-              <p className="text-[11px] font-mono font-semibold text-emerald-700 truncate">Gold Medalist • Surgical Gastroenterologist</p>
-              <p className="text-[10px] text-slate-500 truncate">HIMAS Hospital, Basavanagudi</p>
-            </div>
-          </div>
-
           <div className="grid grid-cols-2 gap-2 pb-2 border-b border-slate-200 font-mono text-xs">
             <button
               onClick={() => {

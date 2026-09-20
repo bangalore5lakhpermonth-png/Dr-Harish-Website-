@@ -143,24 +143,12 @@ export const SurgeriesSection: React.FC<SurgeriesSectionProps> = ({ onSelectSpec
 
                 <div className="space-y-4">
                   
-                  {/* Card Header: Photo Thumbnail, Icon & Badge */}
+                  {/* Card Header: Icon & Badge */}
                   <div className="flex items-start justify-between gap-3">
-                    <div className="flex items-center gap-3">
-                      {surgery.image && (
-                        <div className="w-12 h-12 rounded-xl overflow-hidden shrink-0 border border-slate-200 bg-slate-100 shadow-2xs">
-                          <img
-                            src={surgery.image}
-                            alt={surgery.title}
-                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                            referrerPolicy="no-referrer"
-                          />
-                        </div>
-                      )}
-                      <div className="p-2.5 bg-slate-50 rounded-xl border border-slate-200 group-hover:border-emerald-300 group-hover:bg-emerald-50 transition-all">
-                        {getIcon(surgery.iconName)}
-                      </div>
+                    <div className="p-3 bg-slate-50 rounded-xl border border-slate-200 group-hover:border-emerald-300 group-hover:bg-emerald-50 transition-all">
+                      {getIcon(surgery.iconName)}
                     </div>
-                    <span className="text-[10px] font-mono font-bold px-2.5 py-1 rounded-full bg-slate-100 text-slate-700 border border-slate-200 group-hover:border-emerald-300 group-hover:text-emerald-700 group-hover:bg-emerald-50 transition-colors shrink-0">
+                    <span className="text-[10px] font-mono font-bold px-2.5 py-1 rounded-full bg-slate-100 text-slate-700 border border-slate-200 group-hover:border-emerald-300 group-hover:text-emerald-700 group-hover:bg-emerald-50 transition-colors">
                       {surgery.badge}
                     </span>
                   </div>

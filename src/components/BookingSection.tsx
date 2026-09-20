@@ -16,6 +16,7 @@ import {
 import { DOCTOR_INFO } from '../data/doctorData';
 import { api } from '../services/api';
 import { Appointment, ConsultationType, User as UserType } from '../types';
+import { Toast } from './Toast';
 
 interface BookingSectionProps {
   currentUser: UserType | null;
@@ -47,6 +48,8 @@ export const BookingSection: React.FC<BookingSectionProps> = ({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [confirmedApt, setConfirmedApt] = useState<Appointment | null>(null);
+  const [toastApt, setToastApt] = useState<Appointment | null>(null);
+  const [showToast, setShowToast] = useState(false);
 
   // Sync user details if logged in
   React.useEffect(() => {
@@ -100,6 +103,8 @@ export const BookingSection: React.FC<BookingSectionProps> = ({
       });
 
       setConfirmedApt(apt);
+      setToastApt(apt);
+      setShowToast(true);
       onBookingSuccess(apt);
     } catch (err: any) {
       setError(err.message || 'Failed to book appointment.');
@@ -146,6 +151,7 @@ export const BookingSection: React.FC<BookingSectionProps> = ({
 
               <div className="flex flex-wrap items-center justify-center gap-3 pt-3">
                 <button
+                  id="open-portal-from-confirmation-btn"
                   onClick={onOpenPortal}
                   className="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-syne font-bold text-xs rounded-xl shadow-md transition-all flex items-center gap-2 cursor-pointer"
                 >
@@ -153,7 +159,21 @@ export const BookingSection: React.FC<BookingSectionProps> = ({
                   <span>Open Patient Records Vault</span>
                 </button>
                 <button
-                  onClick={() => setConfirmedApt(null)}
+                  id="retrigger-booking-toast-btn"
+                  type="button"
+                  onClick={() => setShowToast(true)}
+                  className="px-4 py-2.5 bg-emerald-100 hover:bg-emerald-200 text-emerald-800 font-mono font-semibold text-xs rounded-xl border border-emerald-300 transition-colors cursor-pointer flex items-center gap-1.5"
+                  title="Re-open booking notification toast"
+                >
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                  <span>Show Booking Toast</span>
+                </button>
+                <button
+                  id="book-another-patient-slot-btn"
+                  onClick={() => {
+                    setConfirmedApt(null);
+                    setShowToast(false);
+                  }}
                   className="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-mono font-semibold text-xs rounded-xl border border-slate-300 transition-colors cursor-pointer"
                 >
                   Book Another Patient Slot
@@ -355,6 +375,15 @@ export const BookingSection: React.FC<BookingSectionProps> = ({
         </div>
 
       </div>
+
+      {/* Booking Feedback Toast Notification */}
+      <Toast
+        isOpen={showToast}
+        onClose={() => setShowToast(false)}
+        appointment={toastApt}
+        onAction={onOpenPortal}
+        actionLabel="Open Records Vault"
+      />
     </section>
   );
 };
