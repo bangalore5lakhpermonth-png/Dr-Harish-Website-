@@ -17,6 +17,8 @@ import { FaqSection } from './components/FaqSection';
 import { ContactFooter } from './components/ContactFooter';
 import { AppointmentBookingModal } from './components/AppointmentBookingModal';
 import { PatientPortalModal } from './components/PatientPortalModal';
+import { SupabaseGuideModal } from './components/SupabaseGuideModal';
+import { Toast } from './components/Toast';
 import { api, authStorage } from './services/api';
 import { Appointment, User } from './types';
 
@@ -24,8 +26,10 @@ export default function App() {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [bookingModalOpen, setBookingModalOpen] = useState(false);
   const [portalModalOpen, setPortalModalOpen] = useState(false);
+  const [supabaseModalOpen, setSupabaseModalOpen] = useState(false);
   const [selectedSpecialty, setSelectedSpecialty] = useState<string>('Laparoscopic Gallbladder Surgery');
   const [latestAppointment, setLatestAppointment] = useState<Appointment | null>(null);
+  const [globalToastOpen, setGlobalToastOpen] = useState(false);
 
   // Initialize user from local session storage
   useEffect(() => {
@@ -64,6 +68,7 @@ export default function App() {
 
   const handleBookingSuccess = (apt: Appointment) => {
     setLatestAppointment(apt);
+    setGlobalToastOpen(true);
   };
 
   return (
@@ -76,6 +81,7 @@ export default function App() {
         onOpenPortal={() => setPortalModalOpen(true)}
         onLogout={handleLogout}
         onQuickDemoSwitch={handleQuickDemoSwitch}
+        onOpenSupabaseHub={() => setSupabaseModalOpen(true)}
       />
 
       {/* Main Content Sections */}
@@ -166,6 +172,22 @@ export default function App() {
           setPortalModalOpen(false);
           setBookingModalOpen(true);
         }}
+        onOpenSupabaseHub={() => setSupabaseModalOpen(true)}
+      />
+
+      {/* Supabase Hub & Schema Guide Modal */}
+      <SupabaseGuideModal
+        isOpen={supabaseModalOpen}
+        onClose={() => setSupabaseModalOpen(false)}
+      />
+
+      {/* Global Booking Feedback Toast Notification */}
+      <Toast
+        isOpen={globalToastOpen}
+        onClose={() => setGlobalToastOpen(false)}
+        appointment={latestAppointment}
+        onAction={() => setPortalModalOpen(true)}
+        actionLabel="Open Records Vault"
       />
     </div>
   );

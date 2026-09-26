@@ -20,7 +20,8 @@ import {
   RefreshCw,
   LogOut,
   Building2,
-  Video
+  Video,
+  Database
 } from 'lucide-react';
 import { Appointment, MedicalRecord, RecordCategory, User } from '../types';
 import { api } from '../services/api';
@@ -32,6 +33,7 @@ interface PatientPortalModalProps {
   currentUser: User | null;
   onUserChange: (user: User | null) => void;
   onOpenBooking: () => void;
+  onOpenSupabaseHub?: () => void;
 }
 
 export const PatientPortalModal: React.FC<PatientPortalModalProps> = ({
@@ -40,6 +42,7 @@ export const PatientPortalModal: React.FC<PatientPortalModalProps> = ({
   currentUser,
   onUserChange,
   onOpenBooking,
+  onOpenSupabaseHub,
 }) => {
   // Tabs: 'appointments' | 'records' | 'upload' | 'auth'
   const [activeTab, setActiveTab] = useState<'appointments' | 'records' | 'upload'>(
@@ -295,6 +298,16 @@ export const PatientPortalModal: React.FC<PatientPortalModalProps> = ({
           </div>
 
           <div className="flex items-center gap-2">
+            {onOpenSupabaseHub && (
+              <button
+                onClick={onOpenSupabaseHub}
+                title="View Supabase Backend Hub & SQL Schema"
+                className="text-xs font-mono bg-slate-900 hover:bg-slate-800 text-white flex items-center gap-1.5 py-1 px-2.5 rounded-lg transition-colors cursor-pointer shadow-xs"
+              >
+                <Database className="w-3.5 h-3.5 text-emerald-400" />
+                <span className="hidden sm:inline">Supabase Hub</span>
+              </button>
+            )}
             {currentUser && (
               <button
                 onClick={handleLogout}

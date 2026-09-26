@@ -2,53 +2,12 @@ import express from 'express';
 import path from 'path';
 import fs from 'fs';
 import { createServer as createViteServer } from 'vite';
-
-interface UserData {
-  id: string;
-  name: string;
-  email: string;
-  password?: string;
-  phone: string;
-  role: 'patient' | 'doctor' | 'admin';
-  age?: number;
-  gender?: 'Male' | 'Female' | 'Other';
-  mrn?: string;
-  createdAt: string;
-}
-
-interface AppointmentData {
-  id: string;
-  patientId: string;
-  patientName: string;
-  patientPhone: string;
-  patientEmail?: string;
-  age?: number;
-  gender?: string;
-  consultationType: 'in-clinic' | 'video';
-  hospitalLocation: string;
-  specialty: string;
-  appointmentDate: string;
-  timeSlot: string;
-  symptoms: string;
-  status: 'pending' | 'confirmed' | 'completed' | 'cancelled';
-  doctorNotes?: string;
-  createdAt: string;
-}
-
-interface MedicalRecordData {
-  id: string;
-  patientId: string;
-  patientName: string;
-  recordTitle: string;
-  category: 'lab_report' | 'scan_imaging' | 'endoscopy' | 'prescription' | 'discharge_summary' | 'other';
-  recordDate: string;
-  uploadedBy: 'patient' | 'doctor';
-  doctorNotes?: string;
-  fileName: string;
-  fileSize: string;
-  fileData?: string;
-  createdAt: string;
-}
+import { 
+  supabaseService, 
+  UserData, 
+  AppointmentData, 
+  MedicalRecordData 
+} from './server/supabase.ts';
 
 const DATA_DIR = path.join(process.cwd(), 'data');
 const DATA_FILE = path.join(DATA_DIR, 'db.json');
@@ -266,13 +225,60 @@ async function startServer() {
       service: 'Dr. Harish Gowda Clinical & Appointment Engine',
       hospital: 'HIMAS Hospital, Basavanagudi, Bangalore',
       phone: '+91 77603 00622',
+      backend: supabaseService.isConfigured() ? 'supabase' : 'local_persistence',
       appointmentsCount: db.appointments.length,
       recordsCount: db.records.length,
     });
   });
 
+  // Backend status check (Supabase + Local persistent DB)
+  app.get('/api/backend-status', async (req, res) => {
+    try {
+      const isConfigured = supabaseService.isConfigured();
+      const maskedUrl = supabaseService.getMaskedUrl();
+      const health = await supabaseService.checkHealth();
+
+      res.json({
+        provider: isConfigured && health.connected ? 'supabase' : 'local_persistence',
+        supabaseConfigured: isConfigured,
+        supabaseConnected: health.connected,
+        maskedUrl,
+        message: health.message,
+        appointmentsCount: db.appointments.length,
+        recordsCount: db.records.length,
+        usersCount: db.users.length,
+      });
+    } catch (err: any) {
+      res.json({
+        provider: 'local_persistence',
+        supabaseConfigured: false,
+        supabaseConnected: false,
+        maskedUrl: null,
+        message: 'Running on local persistent database.',
+        appointmentsCount: db.appointments.length,
+        recordsCount: db.records.length,
+        usersCount: db.users.length,
+      });
+    }
+  });
+
+  // Supabase SQL Schema Endpoint for easy copy or setup
+  app.get('/api/supabase/schema', (req, res) => {
+    try {
+      const schemaPath = path.join(process.cwd(), 'supabase', 'schema.sql');
+      if (fs.existsSync(schemaPath)) {
+        const sql = fs.readFileSync(schemaPath, 'utf-8');
+        res.setHeader('Content-Type', 'text/plain; charset=utf-8');
+        return res.send(sql);
+      }
+      res.status(404).send('-- Schema file not found');
+    } catch (err: any) {
+      res.status(500).send(`-- Error reading schema: ${err.message}`);
+    }
+  });
+
   // Auth: Register new patient
-  app.post('/api/auth/register', (req, res) => {
+  app.post('/api/auth/register', async (req, res) => {
     const { name, email, password, phone, age, gender } = req.body;
     if (!name || !email || !password || !phone) {
       return res.status(400).json({ error: 'Name, email, password, and phone number are required.' });
@@ -299,6 +305,15 @@ async function startServer() {
 
     db.users.push(newUser);
     saveDB(db);
+
+    // Also persist to Supabase if configured
+    if (supabaseService.isConfigured()) {
+      try {
+        await supabaseService.createUser(newUser);
+      } catch (e) {
+        console.warn('[Supabase Sync] User insert deferred or logged', e);
+      }
+    }
 
     const token = `token_${newUser.id}`;
     const safeUser = { ...newUser };
@@ -366,7 +381,7 @@ async function startServer() {
   });
 
   // Appointments: Get list
-  app.get('/api/appointments', (req, res) => {
+  app.get('/api/appointments', async (req, res) => {
     const user = getUserFromToken(req.headers.authorization);
     
     // If not authenticated, return public schedule availability or prompt
@@ -375,17 +390,31 @@ async function startServer() {
       return res.json({ appointments: [] });
     }
 
+    let allAppointments = db.appointments;
+    if (supabaseService.isConfigured()) {
+      try {
+        const supaList = await supabaseService.getAppointments();
+        if (supaList && supaList.length > 0) {
+          allAppointments = supaList;
+          db.appointments = supaList;
+          saveDB(db);
+        }
+      } catch (e) {
+        console.warn('[Supabase Sync] appointments fallback to local cache', e);
+      }
+    }
+
     // Doctor can view all patient appointments; Patient can only view their own
     if (user.role === 'doctor' || user.role === 'admin') {
-      return res.json({ appointments: db.appointments });
+      return res.json({ appointments: allAppointments });
     } else {
-      const patientAppointments = db.appointments.filter((a: AppointmentData) => a.patientId === user.id);
+      const patientAppointments = allAppointments.filter((a: AppointmentData) => a.patientId === user.id);
       return res.json({ appointments: patientAppointments });
     }
   });
 
   // Appointments: Create new booking
-  app.post('/api/appointments', (req, res) => {
+  app.post('/api/appointments', async (req, res) => {
     const user = getUserFromToken(req.headers.authorization);
     const {
       patientName,
@@ -427,6 +456,15 @@ async function startServer() {
     db.appointments.unshift(newAppointment);
     saveDB(db);
 
+    // Sync to Supabase if configured
+    if (supabaseService.isConfigured()) {
+      try {
+        await supabaseService.createAppointment(newAppointment);
+      } catch (e) {
+        console.warn('[Supabase Sync] createAppointment fallback', e);
+      }
+    }
+
     res.status(201).json({
       appointment: newAppointment,
       message: `Appointment successfully booked with Dr. Harish Gowda at HIMAS Hospital for ${appointmentDate} at ${timeSlot}.`,
@@ -434,7 +472,7 @@ async function startServer() {
   });
 
   // Appointments: Update status / notes (Doctor or Patient cancel)
-  app.patch('/api/appointments/:id/status', (req, res) => {
+  app.patch('/api/appointments/:id/status', async (req, res) => {
     const user = getUserFromToken(req.headers.authorization);
     const { id } = req.params;
     const { status, doctorNotes } = req.body;
@@ -461,6 +499,14 @@ async function startServer() {
     db.appointments[aptIndex] = appointment;
     saveDB(db);
 
+    if (supabaseService.isConfigured()) {
+      try {
+        await supabaseService.updateAppointmentStatus(id, status, doctorNotes);
+      } catch (e) {
+        console.warn('[Supabase Sync] updateAppointmentStatus fallback', e);
+      }
+    }
+
     res.json({
       appointment,
       message: 'Appointment status updated successfully.',
@@ -468,27 +514,41 @@ async function startServer() {
   });
 
   // Medical Records: Get list
-  app.get('/api/records', (req, res) => {
+  app.get('/api/records', async (req, res) => {
     const user = getUserFromToken(req.headers.authorization);
     if (!user) {
       return res.status(401).json({ error: 'Authentication required to access medical records.' });
     }
 
+    let allRecords = db.records;
+    if (supabaseService.isConfigured()) {
+      try {
+        const supaRecords = await supabaseService.getRecords();
+        if (supaRecords && supaRecords.length > 0) {
+          allRecords = supaRecords;
+          db.records = supaRecords;
+          saveDB(db);
+        }
+      } catch (e) {
+        console.warn('[Supabase Sync] records fallback to local cache', e);
+      }
+    }
+
     if (user.role === 'doctor' || user.role === 'admin') {
       const patientIdQuery = req.query.patientId as string;
       if (patientIdQuery) {
-        const filtered = db.records.filter((r: MedicalRecordData) => r.patientId === patientIdQuery);
+        const filtered = allRecords.filter((r: MedicalRecordData) => r.patientId === patientIdQuery);
         return res.json({ records: filtered });
       }
-      return res.json({ records: db.records });
+      return res.json({ records: allRecords });
     } else {
-      const patientRecords = db.records.filter((r: MedicalRecordData) => r.patientId === user.id);
+      const patientRecords = allRecords.filter((r: MedicalRecordData) => r.patientId === user.id);
       return res.json({ records: patientRecords });
     }
   });
 
   // Medical Records: Upload/Store new record
-  app.post('/api/records', (req, res) => {
+  app.post('/api/records', async (req, res) => {
     const user = getUserFromToken(req.headers.authorization);
     if (!user) {
       return res.status(401).json({ error: 'Authentication required to store medical records.' });
@@ -530,6 +590,14 @@ async function startServer() {
     db.records.unshift(newRecord);
     saveDB(db);
 
+    if (supabaseService.isConfigured()) {
+      try {
+        await supabaseService.createRecord(newRecord);
+      } catch (e) {
+        console.warn('[Supabase Sync] createRecord fallback', e);
+      }
+    }
+
     res.status(201).json({
       record: newRecord,
       message: 'Medical document securely uploaded and encrypted in vault.',
@@ -537,7 +605,7 @@ async function startServer() {
   });
 
   // Medical Records: Delete record
-  app.delete('/api/records/:id', (req, res) => {
+  app.delete('/api/records/:id', async (req, res) => {
     const user = getUserFromToken(req.headers.authorization);
     if (!user) {
       return res.status(401).json({ error: 'Authentication required.' });
@@ -556,6 +624,14 @@ async function startServer() {
 
     db.records.splice(index, 1);
     saveDB(db);
+
+    if (supabaseService.isConfigured()) {
+      try {
+        await supabaseService.deleteRecord(id);
+      } catch (e) {
+        console.warn('[Supabase Sync] deleteRecord fallback', e);
+      }
+    }
 
     res.json({ message: 'Record deleted from storage.' });
   });

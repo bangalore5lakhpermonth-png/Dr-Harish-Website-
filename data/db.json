@@ -37,6 +37,23 @@
   ],
   "appointments": [
     {
+      "id": "apt-1790392973183",
+      "patientId": "guest-1790392973183",
+      "patientName": "Anand Verma",
+      "patientPhone": "+91 99887 76655",
+      "patientEmail": "",
+      "gender": "Not specified",
+      "consultationType": "in-clinic",
+      "hospitalLocation": "HIMAS Hospital, Basavanagudi, Bangalore",
+      "specialty": "Laparoscopic Gallbladder Surgery",
+      "appointmentDate": "2026-09-18",
+      "timeSlot": "10:30 AM",
+      "symptoms": "Routine surgical consultation",
+      "status": "confirmed",
+      "doctorNotes": "",
+      "createdAt": "2026-09-26T03:22:53.183Z"
+    },
+    {
       "id": "apt-1789106347260",
       "patientId": "guest-1789106347260",
       "patientName": "Test Verification Patient",

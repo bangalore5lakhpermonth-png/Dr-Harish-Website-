@@ -225,4 +225,41 @@ export const api = {
       throw new Error(err.error || 'Failed to delete record');
     }
   },
+
+  // Backend Status & Supabase Synchronization
+  async getBackendStatus(): Promise<{
+    provider: 'supabase' | 'local_persistence';
+    supabaseConfigured: boolean;
+    supabaseConnected: boolean;
+    maskedUrl: string | null;
+    message: string;
+    appointmentsCount: number;
+    recordsCount: number;
+    usersCount: number;
+  }> {
+    const res = await fetch('/api/backend-status', {
+      headers: getHeaders(),
+    });
+    if (!res.ok) {
+      return {
+        provider: 'local_persistence',
+        supabaseConfigured: false,
+        supabaseConnected: false,
+        maskedUrl: null,
+        message: 'Running on local persistent database.',
+        appointmentsCount: 0,
+        recordsCount: 0,
+        usersCount: 0,
+      };
+    }
+    return res.json();
+  },
+
+  async getSupabaseSchema(): Promise<string> {
+    const res = await fetch('/api/supabase/schema');
+    if (!res.ok) {
+      throw new Error('Failed to load SQL schema');
+    }
+    return res.text();
+  },
 };
